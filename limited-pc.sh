@@ -68,3 +68,5 @@ git repack -q
 git gc -q --aggressive
 git repack -q
 cd ..
+
+echo "so, how long did it take? I think way too long."
