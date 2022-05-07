@@ -48,4 +48,25 @@ unpack_version(){
 	fi
 }
 export -f unpack_version
-cut -d' ' -f1 downloadUrls  | uniq | xargs -L1 -P2 bash -c 'unpack_version $1 $2 $3'
+cut -d' ' -f1 downloadUrls  | uniq | xargs -L1 -P2 bash -c 'unpack_version $1'
+cut -d' ' -f1 < downloadUrls | uniq | tac > gitVersions
+if test -f "git"; then
+	cd git
+else
+	mkdir git
+	cd git
+	git init
+	git config commit.gpgsign false
+fi
+while read version
+do
+	if [ $(git tag -l "$version") ]; then
+		echo "$version already has a tag."
+	else
+		rm * -r
+		cp ../downloads/$version/decompiled/* . -r
+		git add .
+		git commit -m"$version"
+		git tag -a $version -m $version
+	fi
+done < ../gitVersions
