@@ -76,7 +76,7 @@ do
 	if [ $(git tag -l "$version") ]; then
 		echo "$version already has a tag."
 	else
-		git rm -r --cached .
+		git rm -r --cached . || true
 		cp ../downloads/$version/decompiled/* . -r
 		git add .
 		sed -i "1 i\\$version" summary.txt
