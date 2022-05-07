@@ -64,7 +64,7 @@ git config gc.auto 0
 while read version
 do
 
-	if [ "${version}" = " " ]
+	if [ "${version}" = "" ]
 	then
 		continue
 	fi
