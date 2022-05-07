@@ -50,7 +50,7 @@ unpack_version(){
 export -f unpack_version
 cut -d' ' -f1 downloadUrls  | uniq | xargs -L1 -P2 bash -c 'unpack_version $1'
 cut -d' ' -f1 < downloadUrls | uniq | tac > gitVersions
-if test -f "git"; then
+if [ -d "git" ]; then
 	cd git
 else
 	mkdir git
