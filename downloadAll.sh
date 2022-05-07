@@ -57,10 +57,17 @@ else
 	cd git
 	git init
 	git config commit.gpgsign false
+	git config user.email "git@example.com"
+	git config user.name "git"
 fi
 git config gc.auto 0
 while read version
 do
+
+	if [ "${version}" = " " ]
+	then
+		continue
+	fi
 	if [ $(git tag -l "$version") ]; then
 		echo "$version already has a tag."
 	else
