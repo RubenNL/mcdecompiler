@@ -9,14 +9,19 @@ download_json(){
 	url=$(jq -r .url <<< $line)
 	release=$(jq -r .releaseTime <<< $line)
 	mkdir -p downloads/$version
-	jq empty downloads/$version/json.json > /dev/null 2>&1
-	if [ $? -ne 0 ] || [ -s downloads/$version/json.json ]
-	then
-		echo "$version already downloaded"
-	else
+	for _ in once; do
+		if [ -s downloads/$version/json.json ]
+		then
+			jq empty downloads/$version/json.json > /dev/null 2>&1
+			if [ $? -eq 0 ]
+			then
+				echo "$version already downloaded"
+				break
+			fi
+		fi
 		wget -q -O downloads/$version/json.json $url
 		echo "$version downloaded"
-	fi
+	done
 	downloads=$(jq -r .downloads < downloads/$version/json.json)
 	echo "$release $version $(jq -r .client.url <<< $downloads) $(jq -r .client.sha1 <<< $downloads)" >> unsortedUrls
 	echo "$release $version $(jq -r .client_mappings.url <<< $downloads) $(jq -r .client_mappings.sha1 <<< $downloads)" >> unsortedUrls
