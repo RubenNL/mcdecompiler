@@ -80,6 +80,7 @@ do
 		git tag -a $version -m $version
 	fi
 done < ../gitVersions
+rm summary.txt
 git repack
 git gc --aggressive
 git repack
