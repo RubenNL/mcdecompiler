@@ -58,6 +58,7 @@ else
 	git init
 	git config commit.gpgsign false
 fi
+git config gc.auto 0
 while read version
 do
 	if [ $(git tag -l "$version") ]; then
@@ -72,3 +73,7 @@ do
 		git tag -a $version -m $version
 	fi
 done < ../gitVersions
+git repack
+git gc --aggressive
+git repack
+git config gc.auto 1
