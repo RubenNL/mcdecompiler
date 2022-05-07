@@ -85,3 +85,5 @@ git repack
 git gc --aggressive
 git repack
 git config gc.auto 1
+
+cd ..
