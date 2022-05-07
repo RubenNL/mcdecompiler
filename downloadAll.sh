@@ -1,3 +1,4 @@
+#!/bin/bash
 set -e
 curl https://launchermeta.mojang.com/mc/game/version_manifest_v2.json | jq -c '.versions | .[:-(length - ([.[] | .id=="19w36a"] | index(true)))] | .[]' > versions
 download_json(){

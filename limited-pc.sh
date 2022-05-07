@@ -1,3 +1,4 @@
+#!/bin/bash
 set -e
 echo 'loading git...'
 if [ -d "git" ]; then
