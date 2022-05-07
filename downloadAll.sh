@@ -63,10 +63,12 @@ do
 	if [ $(git tag -l "$version") ]; then
 		echo "$version already has a tag."
 	else
-		rm * -r
+		git rm -r --cached .
 		cp ../downloads/$version/decompiled/* . -r
 		git add .
-		git commit -m"$version"
+		sed -i "1 i\\$version" summary.txt
+		git reset summary.txt
+		git commit -F summary.txt
 		git tag -a $version -m $version
 	fi
 done < ../gitVersions
