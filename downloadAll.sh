@@ -1,16 +1,24 @@
 set -e
 curl https://launchermeta.mojang.com/mc/game/version_manifest_v2.json | jq -c '.versions | .[:-(length - ([.[] | .id=="19w36a"] | index(true)))] | .[]' > versions
-while read line; do
+download_json(){
+	set -e
+	line=$1
 	version=$(jq -r .id <<< $line)
+	echo "starting $version"
 	type=$(jq -r .type <<< $line)
 	url=$(jq -r .url <<< $line)
+	release=$(jq -r .releaseTime <<< $line)
 	mkdir -p downloads/$version
-	jq empty downloads/$version/json.json > /dev/null 2>&1 || wget -O downloads/$version/json.json $url
+	jq empty downloads/$version/json.json > /dev/null 2>&1 && echo "$version already downloaded" || (wget -q -O downloads/$version/json.json $url && echo "$version downloaded")
 	downloads=$(jq -r .downloads < downloads/$version/json.json)
-	echo "$version $(jq -r .client.url <<< $downloads) $(jq -r .client.sha1 <<< $downloads)"
-	echo "$version $(jq -r .client_mappings.url <<< $downloads) $(jq -r .client_mappings.sha1 <<< $downloads)"
-done < versions > downloadUrls
-
+	echo "$release $version $(jq -r .client.url <<< $downloads) $(jq -r .client.sha1 <<< $downloads)" >> unsortedUrls
+	echo "$release $version $(jq -r .client_mappings.url <<< $downloads) $(jq -r .client_mappings.sha1 <<< $downloads)" >> unsortedUrls
+	echo "$version done"
+} 
+export -f download_json
+echo '' > unsortedUrls
+xargs -L1 -d'\n' -P8 bash -c 'download_json "$0"' < versions
+sort unsortedUrls | cut -d' ' -f2- > downloadUrls
 
 download_version(){
 	filename=downloads/$0/$(basename $1)
